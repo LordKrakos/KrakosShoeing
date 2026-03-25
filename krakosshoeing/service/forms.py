@@ -1,6 +1,33 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
-from .models import Client, Job, JobLineItem, Service, Horse
+from .models import User, Client, Job, JobLineItem, Service, Horse
+
+
+# User Forms
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+            'password1',
+            'password2',
+        ]
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'id': 'username',
+                'name': 'username',
+                'class': 'username',
+                'placeholder': 'Username'
+            }),
+            'email': forms.EmailInput(attrs={
+                'id': 'email',
+                'name': 'email',
+                'class': 'email',
+                'placeholder': 'Example@email.com'
+            }),
+        }
 
 
 # Model Forms
@@ -25,7 +52,7 @@ class ClientForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={
                 'id': 'last-name',
                 'name': 'last-name',
-                'class': 'last-name',
+                'class': 'last-name'
             }),
             'photo': forms.ClearableFileInput(attrs={
                 'id': 'client-image',
@@ -36,14 +63,14 @@ class ClientForm(forms.ModelForm):
                 'id': 'business',
                 'name': 'business',
                 'class': 'business',
-                'placeholder': 'Business name',
+                'placeholder': 'Business name'
             }),
             'phone_number': forms.TextInput(attrs={
                 'id': 'phone-number',
                 'name': 'phone-number',
                 'class': 'phone-number',
                 'type': 'tel',
-                'placeholder': '(xxx) xxx-xxxx',
+                'placeholder': '(xxx) xxx-xxxx'
             }),
             'email': forms.EmailInput(attrs={
                 'id': 'email',
