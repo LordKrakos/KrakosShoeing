@@ -1,33 +1,65 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
 
 from .models import User, Client, Job, JobLineItem, Service, Horse
 
 
 # User Forms
-class RegistrationForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = [
-            'username',
-            'email',
-            'password1',
-            'password2',
-        ]
-        widgets = {
-            'username': forms.TextInput(attrs={
-                'id': 'username',
-                'name': 'username',
-                'class': 'username',
-                'placeholder': 'Username'
-            }),
-            'email': forms.EmailInput(attrs={
-                'id': 'email',
-                'name': 'email',
-                'class': 'email',
-                'placeholder': 'Example@email.com'
-            }),
-        }
+class RegistrationForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'id': 'username',
+        'name': 'username',
+        'class': 'username',
+        'placeholder': 'username'
+    }))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'id': 'email',
+        'name': 'email',
+        'class': 'email',
+        'placeholder': 'Email@example.com'
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'id': 'password',
+        'name': 'password',
+        'class': 'password',
+        'placeholder': 'password'
+    }))
+    confirmation = forms.CharField(widget=forms.PasswordInput(attrs={
+        'id': 'confirmation',
+        'name': 'confirmation',
+        'class': 'confirmation',
+        'placeholder': 'Confirm password'
+    }))
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Email already registered.')
+        
+        return email
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+
+        try:
+            validate_password(password)
+        except ValidationError:
+            raise forms.ValidationError('Password does not meet requirements.')
+
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password = cleaned_data.get('password')
+        confirmation = cleaned_data.get('confirmation')
+
+        if password != confirmation:
+            raise forms.ValidationError('Password and confirmation must match.')
+        
+        return cleaned_data
 
 
 # Model Forms
