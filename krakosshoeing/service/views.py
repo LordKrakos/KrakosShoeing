@@ -4,9 +4,10 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Client, Job, JobLineItem, Service, Horse
-from .forms import  RegistrationForm ,ClientForm, JobForm, HorseForm
+from .forms import  RegistrationForm, LoginForm, ClientForm, JobForm, HorseForm
     
 
 # Create your views here.
@@ -56,30 +57,54 @@ def register(request):
     
 
 def login_view(request):
+    # If the user submits the login form
     if request.method == "POST":
 
-        # Attempt to sign user in
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+        # Pass the submitted data to the form
+        form = LoginForm(request.POST)
 
-        # Check if authentication successful
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse("auctions:index"))
-        else:
-            return render(request, "auctions/login.html", {
-                "message": "Invalid username and/or password."
-            })
+        # If the form is valid
+        if form.is_valid():
+            # Get the cleaned data from the form
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+
+            # Authenticate the user
+            user = authenticate(request, username=username, password=password)
+
+            # If the user is authenticated
+            if user is not None:
+                # Log in the user
+                login(request, user)
+                # Display a success message to the user
+                messages.success(request, "Login successful")
+                # Redirect the user to the dashboard
+                return HttpResponseRedirect(reverse("service:dashboard"))
+            else:
+                # Display an error message to the user
+                messages.error(request, "Invalid username and/or password.")
+                # Redirect the user back to the login page
+                return render(request, "service/login.html", {
+                    "form": form
+                })
+    
+    # Otherwise
     else:
-        return render(request, "auctions/login.html")
+        # Create an empty form
+        form = LoginForm()
+
+    # Render the login.html template with the form
+    return render(request, "service/login.html", {
+        "form": form
+    })
     
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("auctions:index"))
+    return HttpResponseRedirect(reverse("service:login"))
 
 
+@login_required
 def create_client(request):
     # If the user submits the form
     if request.method == "POST":
@@ -107,6 +132,7 @@ def create_client(request):
     })
 
 
+@login_required
 def client_list(request):
     # Get all clients and order them by last_name, first_name
     clients = Client.objects.all().order_by('last_name', 'first_name')
@@ -117,12 +143,16 @@ def client_list(request):
     })
 
 
+@login_required
 def client(request, client_id):
     # Get client by id
     client = get_object_or_404(Client, pk=client_id)
+    # Get all jobs related to the client
     jobs = Job.objects.filter(client=client)
+    # Get all horses related to the client
     horses = Horse.objects.filter(owner=client)
 
+    # Render client.html with the client, their jobs, and their horses
     return render(request, "service/client.html", {
         "client": client,
         "jobs": jobs,

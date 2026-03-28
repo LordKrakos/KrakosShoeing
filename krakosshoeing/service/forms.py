@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from .models import User, Client, Job, JobLineItem, Service, Horse
 
 
-# User Forms
+# User Auth Forms
 class RegistrationForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'username',
@@ -45,8 +45,8 @@ class RegistrationForm(forms.Form):
 
         try:
             validate_password(password)
-        except ValidationError:
-            raise forms.ValidationError('Password does not meet requirements.')
+        except ValidationError as e:
+            raise forms.ValidationError(e.messages)
 
         return password
 
@@ -60,6 +60,21 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError('Password and confirmation must match.')
         
         return cleaned_data
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'id': 'username',
+        'name': 'username',
+        'class': 'username',
+        'placeholder': 'username'
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'id': 'password',
+        'name': 'password',
+        'class': 'password',
+        'placeholder': 'password'
+    }))
 
 
 # Model Forms

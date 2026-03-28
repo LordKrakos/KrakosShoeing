@@ -10,7 +10,7 @@ urlpatterns = [
 
     # Client URLs
     path("clients", views.client_list, name="clients"),
-    path("clients/<id>/", views.client, name="client"),
+    path("clients/<int:id>/", views.client, name="client"),
     path("clients/new/", views.create_client, name="new client")
 
     # Horse URLs
