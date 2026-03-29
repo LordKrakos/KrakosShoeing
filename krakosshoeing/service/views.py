@@ -204,7 +204,7 @@ def delete_client(request, client_id):
     if request.method == "POST":
         # delete the client
         client.delete()
-        # # Display a success message to the user
+        # Display a success message to the user
         messages.success(request, 'Client and all associated records successfully deleted')
         # Redirect the user to the client list page
         return HttpResponseRedirect(reverse('service:clients'))
