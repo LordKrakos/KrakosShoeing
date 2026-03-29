@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
+# NOTE: I should add UUID if I ever make parts of the app public facing
 # Create your models here.
 class User(AbstractUser):
     pass

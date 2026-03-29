@@ -105,6 +105,10 @@ def logout_view(request):
 
 
 @login_required
+# TODO: dashboard view
+
+
+@login_required
 def create_client(request):
     # If the user submits the form
     if request.method == "POST":
@@ -157,4 +161,55 @@ def client(request, client_id):
         "client": client,
         "jobs": jobs,
         "horses": horses
+    })
+
+
+@login_required
+def edit_client(request, client_id):
+    # Get client by id
+    client = get_object_or_404(Client, pk=client_id)
+
+    # If the user submits the form
+    if request.method == "POST":
+
+        # Pass the submitted data and files to the form
+        form = ClientForm(request.POST, request.FILES, instance=client)
+
+        # If the form is valid
+        if form.is_valid():
+            # Save the form data to the database
+            form.save()
+            # Display a success message to the user
+            messages.success(request, 'Client information successfully updated!')
+            # Redirect the user to the client list page
+            return HttpResponseRedirect(reverse('service:clients'))
+        
+    # Otherwise
+    else:
+        # Create a form pre-filled with the client's current information
+        form = ClientForm(instance=client)
+
+    # Render the create_client.html template with the form
+    return render(request, "service/create_client.html", {
+        "form": form
+    })
+        
+
+@login_required
+def delete_client(request, client_id):
+    # Get client by id
+    client = get_object_or_404(Client, pk=client_id)
+    
+    # If the user submits the edit client form
+    if request.method == "POST":
+        # delete the client
+        client.delete()
+        # # Display a success message to the user
+        messages.success(request, 'Client and all associated records successfully deleted')
+        # Redirect the user to the client list page
+        return HttpResponseRedirect(reverse('service:clients'))
+    
+    # Render the delete_client.html template
+    return render(request, "service/delete_client.html", {
+        "client": client
     })
