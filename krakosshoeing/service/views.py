@@ -218,7 +218,7 @@ def delete_client(request, client_id):
 
 
 @login_required
-def add_client_horse(request, client_id):
+def add_client_horse(request):
     if request.method == "POST":
 
         form = HorseForm(request.POST)
