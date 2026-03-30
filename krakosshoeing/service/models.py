@@ -20,6 +20,7 @@ class Client(models.Model):
         - business_name: The client's business name (max length 100 characters).
         - phone_number: The client's phone number, stored using the PhoneNumberField from the django-phonenumber-field package.
         - email: The client's email address (max length 254 characters).
+        - is_active: A boolean field indicating whether the client is active or has been deactivated (soft deleted).
 
     String Representation:
         - If the client is related to a business, it returns "FirstName LastName - BusinessName".
@@ -32,6 +33,7 @@ class Client(models.Model):
     business_name = models.CharField(blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, null=True, unique=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         if self.business_name:
@@ -90,6 +92,7 @@ class Horse(models.Model):
         - breed: The breed of the horse (max length 100 characters).
         - photo: An optional image field for the horse's photo, uploaded to 'horse_photos/'.
         - description: A text field for additional details about the horse (max length 3000 characters).
+        - is_active: A boolean field indicating whether the horse is active or has been deactivated (soft deleted).
 
     String Representation:
         - Returns a string in the format of the horses "Name - Breed - Owner".
@@ -97,7 +100,7 @@ class Horse(models.Model):
 
     owner = models.ForeignKey(
         Client,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         related_name="horses"
     )
@@ -105,6 +108,7 @@ class Horse(models.Model):
     breed = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='horse_photos/', blank=True, null=True)
     description = models.TextField(max_length=3000)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.name} - {self.breed} - owner:{self.owner}"
@@ -127,7 +131,7 @@ class Job(models.Model):
 
     client = models.ForeignKey(
         Client,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         related_name="jobs"
     )

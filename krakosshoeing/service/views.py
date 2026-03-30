@@ -33,7 +33,7 @@ def register(request):
                 login(request, user)
                 # Display a success message to the user
                 messages.success(request, 'Registration successful! You are now logged in.')
-                # Redirect the user to the dahsboard
+                # Redirect the user to the dashboard
                 return HttpResponseRedirect(reverse('service:dashboard'))
             
             # Except if an IntegrityError is raised
@@ -138,8 +138,8 @@ def create_client(request):
 
 @login_required
 def client_list(request):
-    # Get all clients and order them by last_name, first_name
-    clients = Client.objects.all().order_by('last_name', 'first_name')
+    # Get all active clients and order them by last_name, first_name
+    clients = Client.objects.filter(is_active=True).order_by('last_name', 'first_name')
     
     # Render clients.html with all clients
     return render(request, "service/clients.html", {
@@ -189,8 +189,8 @@ def edit_client(request, client_id):
         # Create a form pre-filled with the client's current information
         form = ClientForm(instance=client)
 
-    # Render the create_client.html template with the form
-    return render(request, "service/create_client.html", {
+    # Render the edit_client.html template with the form
+    return render(request, "service/edit_client.html", {
         "form": form
     })
         
@@ -200,16 +200,37 @@ def delete_client(request, client_id):
     # Get client by id
     client = get_object_or_404(Client, pk=client_id)
     
-    # If the user submits the edit client form
+    # If the user submits the delete client form
     if request.method == "POST":
-        # delete the client
-        client.delete()
+        # Set the client's is_active field to False to soft delete the client
+        client.is_active = False
+        # Save the changes to the client
+        client.save()
         # Display a success message to the user
-        messages.success(request, 'Client and all associated records successfully deleted')
+        messages.success(request, 'Client deactivated. All records have been retained.')
         # Redirect the user to the client list page
         return HttpResponseRedirect(reverse('service:clients'))
     
     # Render the delete_client.html template
     return render(request, "service/delete_client.html", {
         "client": client
+    })
+
+
+@login_required
+def add_client_horse(request, client_id):
+    if request.method == "POST":
+
+        form = HorseForm(request.POST)
+
+        if form.is_valid:
+            form.save()
+            messages.success(request, 'Horse successfully added to client!')
+            return HttpResponseRedirect(reverse('service:client'))
+        
+    else:
+        form = HorseForm()
+
+    return render(request, "service/add_client_horse.html", {
+        "form": form
     })
