@@ -32,14 +32,14 @@ def register(request):
                 # Log in the new user
                 login(request, user)
                 # Display a success message to the user
-                messages.success(request, 'Registration successful! You are now logged in.')
+                messages.success(request, "Registration successful! You are now logged in.")
                 # Redirect the user to the dashboard
                 return HttpResponseRedirect(reverse('service:dashboard'))
             
             # Except if an IntegrityError is raised
             except IntegrityError:
                 # Display an error message to the user
-                messages.error(request, 'Username already taken. Please choose a different username.')
+                messages.error(request, "Username already taken. Please choose a different username.")
                 # Redirect the user back to the registration page
                 return render(request, "service/registration.html", {
                     "form": form
@@ -50,7 +50,7 @@ def register(request):
         # Create an empty form
         form = RegistrationForm()
 
-    # Render the registration.html template with the form
+    # Render the registration page with the form
     return render(request, "service/registration.html", {
         "form": form
     })
@@ -93,14 +93,16 @@ def login_view(request):
         # Create an empty form
         form = LoginForm()
 
-    # Render the login.html template with the form
+    # Render the login page with the form
     return render(request, "service/login.html", {
         "form": form
     })
     
 
 def logout_view(request):
+    # Log user out
     logout(request)
+    # Redirect user to the login page
     return HttpResponseRedirect(reverse("service:login"))
 
 
@@ -110,7 +112,7 @@ def logout_view(request):
 
 @login_required
 def create_client(request):
-    # If the user submits the form
+    # If the user submits the create client form
     if request.method == "POST":
 
         # Pass the submitted data and files to the form
@@ -121,7 +123,7 @@ def create_client(request):
             # Save the form data to the database
             form.save()
             # Display a success message to the user
-            messages.success(request, 'Client successfully created!')
+            messages.success(request, "Client successfully created!")
             # Redirect the user to the client list page
             return HttpResponseRedirect(reverse('service:clients'))
         
@@ -141,7 +143,7 @@ def client_list(request):
     # Get all active clients and order them by last_name, first_name
     clients = Client.objects.filter(is_active=True).order_by('last_name', 'first_name')
     
-    # Render clients.html with all clients
+    # Render client list page with all active clients
     return render(request, "service/clients.html", {
         "clients": clients
     })
@@ -156,7 +158,7 @@ def client(request, client_id):
     # Get all horses related to the client
     horses = Horse.objects.filter(owner=client)
 
-    # Render client.html with the client, their jobs, and their horses
+    # Render client page with the client, their jobs, and their horses
     return render(request, "service/client.html", {
         "client": client,
         "jobs": jobs,
@@ -169,7 +171,7 @@ def edit_client(request, client_id):
     # Get client by id
     client = get_object_or_404(Client, pk=client_id)
 
-    # If the user submits the form
+    # If the user submits the edit client form
     if request.method == "POST":
 
         # Pass the submitted data and files to the form
@@ -180,7 +182,7 @@ def edit_client(request, client_id):
             # Save the form data to the database
             form.save()
             # Display a success message to the user
-            messages.success(request, 'Client information successfully updated!')
+            messages.success(request, f"{client.first_name}'s information successfully updated!")
             # Redirect the user to the client list page
             return HttpResponseRedirect(reverse('service:clients'))
         
@@ -189,7 +191,7 @@ def edit_client(request, client_id):
         # Create a form pre-filled with the client's current information
         form = ClientForm(instance=client)
 
-    # Render the edit_client.html template with the form
+    # Render the edit client page with the form
     return render(request, "service/edit_client.html", {
         "form": form
     })
@@ -207,30 +209,102 @@ def delete_client(request, client_id):
         # Save the changes to the client
         client.save()
         # Display a success message to the user
-        messages.success(request, 'Client deactivated. All records have been retained.')
+        messages.success(request, f"{client.first_name} is deactivated. All records have been retained.")
         # Redirect the user to the client list page
         return HttpResponseRedirect(reverse('service:clients'))
     
-    # Render the delete_client.html template
+    # Render the delete client page
     return render(request, "service/delete_client.html", {
         "client": client
     })
 
 
 @login_required
-def add_client_horse(request):
+def add_client_horse(request, client_id):
+    # Get client by id
+    client = get_object_or_404(Client, pk=client_id)
+
+    # If the user submits the add horse form
     if request.method == "POST":
+        # Pass the submitted data and files to the form
+        form = HorseForm(request.POST, request.FILES)
 
-        form = HorseForm(request.POST)
-
-        if form.is_valid:
-            form.save()
-            messages.success(request, 'Horse successfully added to client!')
-            return HttpResponseRedirect(reverse('service:client'))
+        # If the form is valid
+        if form.is_valid():
+            # # Create, but don't save the new horse instance.
+            horse = form.save(commit=False)
+            # Set the horse's owner to the client
+            horse.owner = client
+            # Save the horse to the database
+            horse.save()
+            # Display a success message to the user
+            messages.success(request, f'The Horse was successfully added to {client.first_name}!')
+            # Redirect the user to the client page
+            return HttpResponseRedirect(reverse('service:client', args=[client_id]))
         
+    # Otherwise
     else:
+        # Create an empty form
         form = HorseForm()
 
+    # Render the add client horse page with the form and client
     return render(request, "service/add_client_horse.html", {
+        "form": form,
+    })
+
+
+@login_required
+def edit_horse(request, horse_id):
+    # Get horse by id
+    horse = get_object_or_404(Horse, pk=horse_id)
+    # Get the client id from the horse's owner field
+    client = horse.owner.id
+
+    # If the user submits the edit horse form
+    if request.method == "POST":
+
+        # Pass the submitted data and files to the form
+        form = HorseForm(request.POST, request.FILES, instance=horse)
+
+        # If the form is valid
+        if form.is_valid():
+            # Save the form data to the database
+            form.save()
+            # Display a success message to the user
+            messages.success(request, f"{horse.name}'s information successfully updated!")
+            # Redirect the user to the client list page
+            return HttpResponseRedirect(reverse('service:client', args=[client]))
+    
+    # Otherwise
+    else:
+        # Create a form pre-filled with the horse's current information
+        form = HorseForm(instance=horse)
+        
+    # Render the edit horse page
+    return render(request, "service/edit_horse.html", {
         "form": form
+    })
+
+
+@login_required
+def delete_horse(request, horse_id):
+    # Get horse by id
+    horse = get_object_or_404(Horse, pk=horse_id)
+    # Get the client id from the horse's owner field
+    client = horse.owner.id
+
+    # If the user submits the delete horse form
+    if request.method == "POST":
+        # Set the horses is_active field to False to soft delete the horse
+        horse.is_active = False
+        # Save the changes to the horse
+        horse.save()
+        # Display a success message to the user
+        messages.success(request, f"{horse.name} is deactivated. All records have been retained.")
+        # Redirect the user to the client page
+        return HttpResponseRedirect(reverse('service:client', args=[client]))
+    
+    # Render the delete horse page
+    return render(request, "service/delete_horse.html", {
+        "horse": horse
     })
