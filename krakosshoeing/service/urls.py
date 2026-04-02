@@ -22,8 +22,10 @@ urlpatterns = [
     path("horses/<int:id>/delete/", views.delete_horse, name="delete_horse"),
 
     # Job URLs
-    path("Jobs/new/", views.create_job, name="new_job"),
+    path("jobs/new/", views.create_job, name="new_job"),
     path("jobs/<int:job_id>/", views.job, name="job"),
+    path("jobs/<int:job_id>/edit/", views.edit_job, name="edit_job"),
+    path("jobs/<int:job_id>/delete/", views.delete_job, name="delete_job")
 
     # JobLineItem URLs
 ]
