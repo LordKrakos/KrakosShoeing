@@ -139,6 +139,7 @@ class Job(models.Model):
     next_appointment = models.DateField(blank=True, null=True)
     is_paid = models.BooleanField(default=False)
     comments = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     
     def get_total(self):
         return sum(item.price for item in self.line_items.all())

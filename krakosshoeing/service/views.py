@@ -231,7 +231,7 @@ def add_client_horse(request, client_id):
 
         # If the form is valid
         if form.is_valid():
-            # # Create, but don't save the new horse instance.
+            # Create, but don't save the new horse instance.
             horse = form.save(commit=False)
             # Set the horse's owner to the client
             horse.owner = client
@@ -249,7 +249,7 @@ def add_client_horse(request, client_id):
 
     # Render the add client horse page with the form and client
     return render(request, "service/add_client_horse.html", {
-        "form": form,
+        "form": form
     })
 
 
@@ -307,4 +307,118 @@ def delete_horse(request, horse_id):
     # Render the delete horse page
     return render(request, "service/delete_horse.html", {
         "horse": horse
+    })
+
+
+@login_required
+def create_job(request):
+    # If the user submits the create job form
+    if request.method == "POST":
+
+        # Pass the submitted data to the form
+        form = JobForm(request.POST)
+
+        # If the form is valid
+        if form.is_valid():
+            # Save the form data to the database
+            form.save()
+            # Get the id of the newly created job
+            job = form.instance.id
+            # Display a success message to the user
+            messages.success(request, f"Job successfully created!")
+            # Redirect the user to the job page
+            return HttpResponseRedirect(reverse('service:job', args=[job]))
+
+    # Otherwise 
+    else:
+        # Create an empty form
+        form = JobForm()
+
+    # Render the create job page with the form
+    return render(request, "service/create_job.html", {
+        "form": form
+    })
+
+
+@login_required
+def job(request, job_id):
+    # Get job by id
+    job = get_object_or_404(Job, pk=job_id)
+    # Get the client related to the job
+    client = job.client
+
+    # Render the job page with the job and client
+    return render(request, "service/job.html", {
+        "job": job,
+        "client": client
+    })
+
+
+@login_required
+def edit_job(request, job_id):
+    # Get job by id
+    job = get_object_or_404(Job, pk=job_id)
+
+    # If the user submits the edit job form
+    if request.method == "POST":
+
+        # Pass the submitted data to the form, along with the instance of the job being edited
+        form = JobForm(request.POST, instance=job)
+
+        # If the form is valid
+        if form.is_valid():
+            # Save the form data to the database
+            form.save()
+            # Display a success message to the user
+            messages.success(request, f"Job successfully updated!")
+            # Redirect the user to the job page
+            return HttpResponseRedirect(reverse('service:job', args=[job_id]))
+
+    # Otherwise 
+    else:
+        # Create a form pre-filled with the job's current information
+        form = JobForm(instance=job)
+
+    # Render the edit job page with the form
+    return render(request, "service/edit_job.html", {
+        "form": form
+    })
+
+
+@login_required
+def delete_job(request, job_id):
+    # Get job by id
+    job = get_object_or_404(Job, pk=job_id)
+    # Get all line items related to the job
+    item = JobLineItem.objects.filter(job=job)
+    # Get the client id from the job's client field
+    client = job.client.id
+
+    # If the user submits the delete job form
+    if request.method == "POST":
+
+        # If there are line items related to the job
+        if item:
+            # Set the job is_active field to False to soft delete the job
+            job.is_active = False
+            # Save the changes to the job
+            job.save()
+            # Display a success message to the user
+            messages.success(request, f"Job is deactivated. All records have been retained.")
+            # Redirect the user to the client page
+            return HttpResponseRedirect(reverse('service:client', args=[client]))
+        
+        # Otherwise, if there are no line items related to the job
+        else:
+            # permanently deleted the job
+            job.delete()
+            # Display a success message to the user
+            messages.success(request, f"Job has been permanently deleted")
+            # Redirect the user to the client page
+            return HttpResponseRedirect(reverse('service:client', args=[client]))
+    
+    # Render the delete job page
+    return render(request, "service/delete_job.html", {
+        "job": job,
+        "item": item,
     })

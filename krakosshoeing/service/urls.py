@@ -18,8 +18,12 @@ urlpatterns = [
     path("clients/<int:client_id>/horses/new/", views.add_client_horse, name="new_horse"),
 
     # Horse URLs
+    path("horses/<int:id>/edit/", views.edit_horse, name="edit_horse"),
+    path("horses/<int:id>/delete/", views.delete_horse, name="delete_horse"),
 
     # Job URLs
+    path("Jobs/new/", views.create_job, name="new_job"),
+    path("jobs/<int:job_id>/", views.job, name="job"),
 
     # JobLineItem URLs
 ]
