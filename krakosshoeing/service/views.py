@@ -2,11 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Client, Job, LineItem, Service, Horse
+from .models import User, Client, Job, LineItem, Horse
 from .forms import  RegistrationForm, LoginForm, ClientForm, HorseForm, JobForm, LineItemForm
     
 
@@ -25,25 +24,14 @@ def register(request):
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
 
-            # Try to
-            try:
-                # Create a new user with the cleaned data
-                user = User.objects.create_user(username=username, email=email, password=password)
-                # Log in the new user
-                login(request, user)
-                # Display a success message to the user
-                messages.success(request, "Registration successful! You are now logged in.")
-                # Redirect the user to the dashboard
-                return HttpResponseRedirect(reverse('service:dashboard'))
-            
-            # Except if an IntegrityError is raised
-            except IntegrityError:
-                # Display an error message to the user
-                messages.error(request, "Username already taken. Please choose a different username.")
-                # Redirect the user back to the registration page
-                return render(request, "service/registration.html", {
-                    "form": form
-                })
+            # Create a new user with the cleaned data
+            user = User.objects.create_user(username=username, email=email, password=password)
+            # Log in the new user
+            login(request, user)
+            # Display a success message to the user
+            messages.success(request, "Registration successful! You are now logged in.")
+            # Redirect the user to the dashboard
+            return HttpResponseRedirect(reverse('service:dashboard'))
             
     # Otherwise
     else:
@@ -107,7 +95,11 @@ def logout_view(request):
 
 
 @login_required
-# TODO: dashboard view
+# TODO: Finish dashboard view
+def dashboard(request):
+    clients = Client.objects.filter('is_active')
+    jobs = Job.objects.filter('is_active').order_by('next_appointment')
+    horses = Horse.objects.filter('is_active')
 
 
 @login_required
@@ -435,9 +427,7 @@ def add_item(request, job_id):
     if request.method == "POST":
 
         # Pass the submitted data to the form
-        form = LineItemForm(request.POST)
-        # Limit the horse choices in the form to horses owned by the client
-        form.fields['horse'].queryset = Horse.objects.filter(owner=client)
+        form = LineItemForm(request.POST, client=client)
 
         # If the form is valid
         if form.is_valid():
@@ -455,9 +445,7 @@ def add_item(request, job_id):
     # Otherwise
     else:
         # Create an empty form
-        form = LineItemForm()
-        # Limit the horse choices in the form to horses owned by the client
-        form.fields['horse'].queryset = Horse.objects.filter(owner=client)
+        form = LineItemForm(client=client)
 
     # Render the add item page with the form
     return render(request, "service/add_item.html", {
@@ -471,12 +459,14 @@ def edit_item(request, item_id):
     item = get_object_or_404(LineItem, pk=item_id)
     # Get the job id from the line item's job field
     job = item.job.id
+    # Get the client from the job's client field
+    client = job.client
 
     # If the user submits the edit item form
     if request.method == "POST":
 
         # Pass the submitted data to the form, along with the instance of the line item being edited
-        form = LineItemForm(request.POST, instance=item)
+        form = LineItemForm(request.POST, instance=item, client=client)
 
         # If the form is valid
         if form.is_valid():
@@ -490,7 +480,7 @@ def edit_item(request, item_id):
     # Otherwise
     else:
         # Create a form pre-filled with the line item's current information
-        form = LineItemForm(instance=item)
+        form = LineItemForm(instance=item, client=client)
 
     # Render the edit item page with the form
     return render(request, "service/edit_item.html", {
@@ -518,4 +508,21 @@ def delete_item(request, item_id):
     return render(request, "service/delete_item.html", {
         "item": item,
         "job": job
+    })
+
+
+@login_required
+def receipt(request, job_id):
+    # Get job by id
+    job = get_object_or_404(Job, pk=job_id)
+    # Get all line items for this job
+    items = LineItem.objects.filter(job=job)
+    # Get the total
+    job_total = job.get_total()
+
+    # Render the receipt template
+    return render(request, "service/receipt.html", {
+        "job": job,
+        "items": items,
+        "job_total": job_total
     })

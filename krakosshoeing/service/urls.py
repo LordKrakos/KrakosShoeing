@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     # User URLs
-    path('', views.dashboard, name="dashboard"),
+    path("dashboard", views.dashboard, name="dashboard"),
     path("register", views.register, name="register"),
     path("login", views.login, name="login"),
     path("logout", views.logout, name="logout"),
@@ -27,10 +27,9 @@ urlpatterns = [
     path("jobs/<int:job_id>/edit/", views.edit_job, name="edit_job"),
     path("jobs/<int:job_id>/delete/", views.delete_job, name="delete_job"),
     path("jobs/<int:job_id>/item/new/", views.add_item, name="new_item"),
+    path("jobs/<int:job_id/receipt/", views.receipt, name="receipt"),
 
     # JobLineItem URLs
     path("item/<int:item_id>/edit/", views.edit_item, name="edit_item"),
     path("item/<int:item_id>/delete/", views.delete_item, name="delete_item")
-
-    # Receipt URL
 ]

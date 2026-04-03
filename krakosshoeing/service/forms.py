@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
-from .models import User, Client, Job, LineItem, Service, Horse
+from .models import User, Client, Job, LineItem, Horse
 
 
 # User Auth Forms
@@ -31,6 +31,14 @@ class RegistrationForm(forms.Form):
         'class': 'confirmation',
         'placeholder': 'Confirm password'
     }))
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('Username already taken.')
+        
+        return username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -217,6 +225,13 @@ class HorseForm(forms.ModelForm):
 
 
 class LineItemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        client = kwargs.pop('client', None)
+        super().__init__(*args, **kwargs)
+
+        if client:
+            self.fields['horse'].queryset = Horse.objects.filter(owner=client)
+
     class Meta:
         model = LineItem
         fields = [
