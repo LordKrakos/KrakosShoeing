@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
-from .models import User, Client, Job, JobLineItem, Service, Horse
+from .models import User, Client, Job, LineItem, Service, Horse
 
 
 # User Auth Forms
@@ -213,4 +213,36 @@ class HorseForm(forms.ModelForm):
                 'name': 'horse-description',
                 'placeholder': 'Give a description of the horse...',
             })
+        }
+
+
+class LineItemForm(forms.ModelForm):
+    class Meta:
+        model = LineItem
+        fields = [
+            'horse',
+            'service',
+            'price'
+        ]
+        labels = {
+            'horse': 'Horse',
+            'service': 'Service',
+            'price': 'Price'
+        }
+        widgets = {
+            'horse' : forms.Select(attrs={
+                'id': 'horse',
+                'name': 'horse',
+                'class': 'horse'
+            }),
+            'service' : forms.Select(attrs={
+                'id': 'service',
+                'name': 'service',
+                'class': 'service'
+            }),
+            'price' : forms.NumberInput(attrs={
+                'id': 'price',
+                'name': 'price',
+                'class': 'price'
+            }),
         }

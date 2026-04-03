@@ -6,8 +6,8 @@ from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Client, Job, JobLineItem, Service, Horse
-from .forms import  RegistrationForm, LoginForm, ClientForm, JobForm, HorseForm
+from .models import User, Client, Job, LineItem, Service, Horse
+from .forms import  RegistrationForm, LoginForm, ClientForm, HorseForm, JobForm, LineItemForm
     
 
 # Create your views here.
@@ -390,7 +390,7 @@ def delete_job(request, job_id):
     # Get job by id
     job = get_object_or_404(Job, pk=job_id)
     # Get all line items related to the job
-    item = JobLineItem.objects.filter(job=job)
+    item = LineItem.objects.filter(job=job)
     # Get the client id from the job's client field
     client = job.client.id
 
@@ -421,4 +421,101 @@ def delete_job(request, job_id):
     return render(request, "service/delete_job.html", {
         "job": job,
         "item": item,
+    })
+
+
+@login_required
+def add_item(request, job_id):
+    # Get job by id
+    job = get_object_or_404(Job, pk=job_id)
+    # Get the client from the job's client field
+    client = job.client
+
+    # If the user submits the add item form
+    if request.method == "POST":
+
+        # Pass the submitted data to the form
+        form = LineItemForm(request.POST)
+        # Limit the horse choices in the form to horses owned by the client
+        form.fields['horse'].queryset = Horse.objects.filter(owner=client)
+
+        # If the form is valid
+        if form.is_valid():
+            # Create, but don't save the new line item instance.
+            item = form.save(commit=False)
+            # Set the line item's job to the current job
+            item.job = job
+            # Save the line item to the database
+            item.save()
+            # Display a success message to the user
+            messages.success(request, f"Item successfully added!")
+            # Redirect the user to the job page
+            return HttpResponseRedirect(reverse('service:job', args=[job_id]))
+        
+    # Otherwise
+    else:
+        # Create an empty form
+        form = LineItemForm()
+        # Limit the horse choices in the form to horses owned by the client
+        form.fields['horse'].queryset = Horse.objects.filter(owner=client)
+
+    # Render the add item page with the form
+    return render(request, "service/add_item.html", {
+        "form": form
+    })
+
+
+@login_required
+def edit_item(request, item_id):
+    # Get line item by id
+    item = get_object_or_404(LineItem, pk=item_id)
+    # Get the job id from the line item's job field
+    job = item.job.id
+
+    # If the user submits the edit item form
+    if request.method == "POST":
+
+        # Pass the submitted data to the form, along with the instance of the line item being edited
+        form = LineItemForm(request.POST, instance=item)
+
+        # If the form is valid
+        if form.is_valid():
+            # Save the form data to the database
+            form.save()
+            # Display a success message to the user
+            messages.success(request, f"Item information successfully updated!")
+            # Redirect the user to the job page
+            return HttpResponseRedirect(reverse('service:job', args=[job]))
+    
+    # Otherwise
+    else:
+        # Create a form pre-filled with the line item's current information
+        form = LineItemForm(instance=item)
+
+    # Render the edit item page with the form
+    return render(request, "service/edit_item.html", {
+        "form": form
+    })
+
+
+@login_required
+def delete_item(request, item_id):
+    # Get line item by id
+    item = get_object_or_404(LineItem, pk=item_id)
+    # Get the job id from the line item's job field
+    job = item.job.id
+
+    # If the user submits the delete item form
+    if request.method == "POST":
+        # permanently delete the item
+        item.delete()
+        # Display a success message to the user
+        messages.success(request, f"Item has been permanently deleted")
+        # Redirect the user to the job page
+        return HttpResponseRedirect(reverse('service:job', args=[job]))
+    
+    # Render the delete item page
+    return render(request, "service/delete_item.html", {
+        "item": item,
+        "job": job
     })

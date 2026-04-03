@@ -148,7 +148,7 @@ class Job(models.Model):
         return f"{self.client} - {self.date}"
 
 
-class JobLineItem(models.Model):
+class LineItem(models.Model):
     """
     Represents a line item for a job, linking a specific horse and service to the job.
 

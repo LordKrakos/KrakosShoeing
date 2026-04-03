@@ -18,14 +18,19 @@ urlpatterns = [
     path("clients/<int:client_id>/horses/new/", views.add_client_horse, name="new_horse"),
 
     # Horse URLs
-    path("horses/<int:id>/edit/", views.edit_horse, name="edit_horse"),
-    path("horses/<int:id>/delete/", views.delete_horse, name="delete_horse"),
+    path("horses/<int:horse_id>/edit/", views.edit_horse, name="edit_horse"),
+    path("horses/<int:horse_id>/delete/", views.delete_horse, name="delete_horse"),
 
     # Job URLs
     path("jobs/new/", views.create_job, name="new_job"),
     path("jobs/<int:job_id>/", views.job, name="job"),
     path("jobs/<int:job_id>/edit/", views.edit_job, name="edit_job"),
-    path("jobs/<int:job_id>/delete/", views.delete_job, name="delete_job")
+    path("jobs/<int:job_id>/delete/", views.delete_job, name="delete_job"),
+    path("jobs/<int:job_id>/item/new/", views.add_item, name="new_item"),
 
     # JobLineItem URLs
+    path("item/<int:item_id>/edit/", views.edit_item, name="edit_item"),
+    path("item/<int:item_id>/delete/", views.delete_item, name="delete_item")
+
+    # Receipt URL
 ]
