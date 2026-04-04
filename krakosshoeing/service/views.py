@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from .models import User, Client, Job, LineItem, Horse
 from .forms import  RegistrationForm, LoginForm, ClientForm, HorseForm, JobForm, LineItemForm
@@ -95,11 +96,88 @@ def logout_view(request):
 
 
 @login_required
-# TODO: Finish dashboard view
 def dashboard(request):
-    clients = Client.objects.filter('is_active')
-    jobs = Job.objects.filter('is_active').order_by('next_appointment')
-    horses = Horse.objects.filter('is_active')
+    
+    # Get the next appointment
+    # JOIN the Job and Client model 
+    next_appointment = Job.objects.select_related('client').filter(
+        # Filter by Jobs that have an upcoming appointment
+        # WHERE Jobs are NOT NULL
+        next_appointment__isnull=False,
+        # WHERE upcoming appointments are >= to today's date
+        next_appointment__gte=timezone.now().date(),
+        # WHERE is_active is true
+        is_active=True
+    # ORDER BY upcoming appointment date and get the first result
+    ).order_by('next_appointment').first()
+
+    # If there is an upcoming appointment
+    if next_appointment:
+        # Get all horses related to the owner(client) of the upcoming appointment
+        # JOIN the Horse and Client model
+        appointment_horses = Horse.objects.select_related('owner').filter(
+            # Filter by horses that are owned by the client of the upcoming appointment
+            # WHERE owner = client of the upcoming appointment
+            owner=next_appointment.client,
+            # WHERE is_active is true
+            is_active=True
+        )
+
+        # Get the last visit for the client of the upcoming appointment
+        # JOIN the Job and Client model
+        last_visit = Job.objects.select_related('client').filter(
+            # Filter by jobs that are related to the client of the upcoming appointment
+            # WHERE client = client of the upcoming appointment
+            client=next_appointment.client,
+            # WHERE is_active is true
+            is_active=True
+        # ORDER BY date and get the first result
+        ).order_by('-date').first()
+
+    # Otherwise, if there is no upcoming appointment
+    else:
+        # Set appointment_horses to None
+        appointment_horses = None
+        # Set last_visit to None
+        last_visit = None
+
+    # If there is a last visit
+    if last_visit:
+        # Get all line items related to the last visit
+        # JOIN the LineItem, Horse, and Service models
+        last_visit_items = LineItem.objects.select_related(
+            'horse', 'service'
+        # Filter by line items that are related to the last visit
+        ).filter(job=last_visit)
+
+    # Otherwise, if there is no last visit
+    else:
+        # Set last_visit_items to None
+        last_visit_items = None
+
+    # Get the 5 most recent jobs
+    # JOIN the Job and Client model
+    recent_jobs = Job.objects.select_related('client').filter(
+        # Filter by jobs that are active
+        # WHERE is_active is true
+        is_active=True
+    # ORDER BY date and get the first 5 results
+    ).order_by('-date')[:5]
+
+    # Get the total number of active clients
+    # Filter the Client model by active clients and get the count
+    total_clients = Client.objects.filter(is_active=True).count()
+
+    # Render the dashboard page
+    # with the next appointment, appointment horses, last visit, last visit items, recent jobs, and total clients
+    return render(request, "service/dashboard.html", {
+        "next_appointment": next_appointment,
+        "appointment_horses": appointment_horses,
+        "last_visit": last_visit,
+        "last_visit_items": last_visit_items,
+        "recent_jobs": recent_jobs,
+        "total_clients": total_clients,
+    })
 
 
 @login_required
