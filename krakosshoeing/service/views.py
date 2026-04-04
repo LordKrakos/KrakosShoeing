@@ -95,13 +95,6 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("service:login"))
 
 
-def logout_view(request):
-    # Log user out
-    logout(request)
-    # Redirect user to the login page
-    return HttpResponseRedirect(reverse("service:login"))
-
-
 @login_required
 def dashboard(request):
     
