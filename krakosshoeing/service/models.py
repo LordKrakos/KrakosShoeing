@@ -14,13 +14,13 @@ class Client(models.Model):
     Represents a client who receives shoeing services.
 
     Model Fields:
-        - first_name: The client's first name (max length 100 characters).
-        - last_name: The client's last name (max length 100 characters).
+        - first_name: Client's first name.
+        - last_name: Client's last name.
         - photo: An optional image field for the client's photo, uploaded to 'client_photos/'.
-        - business_name: The client's business name (max length 100 characters).
+        - business_name: The client's business name.
         - phone_number: The client's phone number, stored using the PhoneNumberField from the django-phonenumber-field package.
-        - email: The client's email address (max length 254 characters).
-        - is_active: A boolean field indicating whether the client is active or has been deactivated (soft deleted).
+        - email: The client's email address.
+        - is_active: A boolean field indicating whether the client is active or has been deactivated.
 
     String Representation:
         - If the client is related to a business, it returns "FirstName LastName - BusinessName".
@@ -30,15 +30,18 @@ class Client(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='client_photos/', blank=True, null=True)
-    business_name = models.CharField(blank=True, null=True)
+    business_name = models.CharField(blank=True, null=True, max_length=100)
     phone_number = PhoneNumberField(blank=True, null=True, unique=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        client_info = f"{self.first_name} {self.last_name}"
         if self.business_name:
-            return f"{self.first_name} {self.last_name} - {self.business_name}"
-        return f"{self.first_name} {self.last_name}"
+            client_info += f" - {self.business_name}"
+        return client_info
 
 
 class Service(models.Model):
@@ -88,11 +91,11 @@ class Horse(models.Model):
 
     Model Fields:
         - owner: A foreign key linking to the Client model, representing the horse's owner.
-        - name: The name of the horse (max length 100 characters).
-        - breed: The breed of the horse (max length 100 characters).
+        - name: Name of the horse.
+        - breed: Breed of the horse.
         - photo: An optional image field for the horse's photo, uploaded to 'horse_photos/'.
-        - description: A text field for additional details about the horse (max length 3000 characters).
-        - is_active: A boolean field indicating whether the horse is active or has been deactivated (soft deleted).
+        - description: A text field for additional details about the horse.
+        - is_active: A boolean field indicating whether the horse is active or has been deactivated.
 
     String Representation:
         - Returns a string in the format of the horses "Name - Breed - Owner".
@@ -109,6 +112,8 @@ class Horse(models.Model):
     photo = models.ImageField(upload_to='horse_photos/', blank=True, null=True)
     description = models.TextField(max_length=3000)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name} - {self.breed} - owner:{self.owner}"
@@ -140,10 +145,12 @@ class Job(models.Model):
     is_paid = models.BooleanField(default=False)
     comments = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def get_total(self):
-        return sum(item.price for item in self.line_items.all())
-    
+        return self.line_items.aggregate(total=models.Sum('price', default=0))['total']
+
     def __str__(self):
         return f"{self.client} - {self.date}"
 

@@ -261,3 +261,15 @@ class LineItemForm(forms.ModelForm):
                 'class': 'price'
             }),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        horse = cleaned_data.get('horse')
+        job = self.instance.job if self.instance else None
+        
+        if horse and job and horse.owner != job.client:
+            raise forms.ValidationError(
+                'This horse does not belong to the client on this job.'
+            )
+        
+        return cleaned_data

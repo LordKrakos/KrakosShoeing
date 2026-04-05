@@ -40,9 +40,7 @@ def register(request):
         form = RegistrationForm()
 
     # Render the registration page with the form
-    return render(request, "service/registration.html", {
-        "form": form
-    })
+    return render(request, "service/registration.html", {"form": form})
     
 
 def login_view(request):
@@ -73,9 +71,7 @@ def login_view(request):
                 # Display an error message to the user
                 messages.error(request, "Invalid username and/or password.")
                 # Redirect the user back to the login page
-                return render(request, "service/login.html", {
-                    "form": form
-                })
+                return render(request, "service/login.html", {"form": form})
     
     # Otherwise
     else:
@@ -83,9 +79,7 @@ def login_view(request):
         form = LoginForm()
 
     # Render the login page with the form
-    return render(request, "service/login.html", {
-        "form": form
-    })
+    return render(request, "service/login.html", {"form": form})
     
 
 def logout_view(request):
@@ -203,9 +197,7 @@ def create_client(request):
         form = ClientForm()
 
     # Render the create_client.html template with the form
-    return render(request, "service/create_client.html", {
-        "form": form
-    })
+    return render(request, "service/create_client.html", {"form": form})
 
 
 @login_required
@@ -214,9 +206,7 @@ def client_list(request):
     clients = Client.objects.filter(is_active=True).order_by('last_name', 'first_name')
     
     # Render client list page with all active clients
-    return render(request, "service/clients.html", {
-        "clients": clients
-    })
+    return render(request, "service/clients.html", {"clients": clients})
 
 
 @login_required
@@ -262,9 +252,7 @@ def edit_client(request, client_id):
         form = ClientForm(instance=client)
 
     # Render the edit client page with the form
-    return render(request, "service/edit_client.html", {
-        "form": form
-    })
+    return render(request, "service/edit_client.html", {"form": form, "client": client})
         
 
 @login_required
@@ -284,9 +272,7 @@ def delete_client(request, client_id):
         return HttpResponseRedirect(reverse('service:clients'))
     
     # Render the delete client page
-    return render(request, "service/delete_client.html", {
-        "client": client
-    })
+    return render(request, "service/delete_client.html", {"client": client})
 
 
 @login_required
@@ -318,9 +304,7 @@ def add_client_horse(request, client_id):
         form = HorseForm()
 
     # Render the add client horse page with the form and client
-    return render(request, "service/add_client_horse.html", {
-        "form": form
-    })
+    return render(request, "service/add_client_horse.html", {"form": form, "client": client})
 
 
 @login_required
@@ -352,7 +336,9 @@ def edit_horse(request, horse_id):
         
     # Render the edit horse page
     return render(request, "service/edit_horse.html", {
-        "form": form
+        "form": form,
+        "client": client,
+        "horse": horse
     })
 
 
@@ -375,9 +361,7 @@ def delete_horse(request, horse_id):
         return HttpResponseRedirect(reverse('service:client', args=[client]))
     
     # Render the delete horse page
-    return render(request, "service/delete_horse.html", {
-        "horse": horse
-    })
+    return render(request, "service/delete_horse.html", {"horse": horse, "client": client})
 
 
 @login_required
@@ -405,9 +389,7 @@ def create_job(request):
         form = JobForm()
 
     # Render the create job page with the form
-    return render(request, "service/create_job.html", {
-        "form": form
-    })
+    return render(request, "service/create_job.html", {"form": form})
 
 
 @login_required
@@ -418,10 +400,7 @@ def job(request, job_id):
     client = job.client
 
     # Render the job page with the job and client
-    return render(request, "service/job.html", {
-        "job": job,
-        "client": client
-    })
+    return render(request, "service/job.html", {"job": job, "client": client})
 
 
 @login_required
@@ -450,9 +429,7 @@ def edit_job(request, job_id):
         form = JobForm(instance=job)
 
     # Render the edit job page with the form
-    return render(request, "service/edit_job.html", {
-        "form": form
-    })
+    return render(request, "service/edit_job.html", {"form": form, "job": job})
 
 
 @login_required
@@ -491,6 +468,7 @@ def delete_job(request, job_id):
     return render(request, "service/delete_job.html", {
         "job": job,
         "item": item,
+        "client": client
     })
 
 
@@ -527,7 +505,9 @@ def add_item(request, job_id):
 
     # Render the add item page with the form
     return render(request, "service/add_item.html", {
-        "form": form
+        "form": form,
+        "job": job,
+        "client": client
     })
 
 
@@ -562,7 +542,10 @@ def edit_item(request, item_id):
 
     # Render the edit item page with the form
     return render(request, "service/edit_item.html", {
-        "form": form
+        "form": form,
+        "item": item,
+        "job": job,
+        "client": client
     })
 
 
@@ -583,10 +566,7 @@ def delete_item(request, item_id):
         return HttpResponseRedirect(reverse('service:job', args=[job]))
     
     # Render the delete item page
-    return render(request, "service/delete_item.html", {
-        "item": item,
-        "job": job
-    })
+    return render(request, "service/delete_item.html", {"item": item, "job": job})
 
 
 @login_required
