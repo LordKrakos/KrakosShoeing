@@ -1,6 +1,4 @@
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -32,7 +30,7 @@ def register(request):
             # Display a success message to the user
             messages.success(request, "Registration successful! You are now logged in.")
             # Redirect the user to the dashboard
-            return HttpResponseRedirect(reverse('service:dashboard'))
+            return redirect('service:dashboard')
             
     # Otherwise
     else:
@@ -66,7 +64,7 @@ def login_view(request):
                 # Display a success message to the user
                 messages.success(request, "Login successful")
                 # Redirect the user to the dashboard
-                return HttpResponseRedirect(reverse("service:dashboard"))
+                return redirect('service:dashboard')
             else:
                 # Display an error message to the user
                 messages.error(request, "Invalid username and/or password.")
@@ -86,7 +84,7 @@ def logout_view(request):
     # Log user out
     logout(request)
     # Redirect user to the login page
-    return HttpResponseRedirect(reverse("service:login"))
+    return redirect('service:login')
 
 
 @login_required
@@ -189,7 +187,7 @@ def create_client(request):
             # Display a success message to the user
             messages.success(request, "Client successfully created!")
             # Redirect the user to the client list page
-            return HttpResponseRedirect(reverse('service:clients'))
+            return redirect('service:clients')
         
     # Otherwise
     else:
@@ -244,7 +242,7 @@ def edit_client(request, client_id):
             # Display a success message to the user
             messages.success(request, f"{client.first_name}'s information successfully updated!")
             # Redirect the user to the client list page
-            return HttpResponseRedirect(reverse('service:clients'))
+            return redirect('service:clients')
         
     # Otherwise
     else:
@@ -269,7 +267,7 @@ def delete_client(request, client_id):
         # Display a success message to the user
         messages.success(request, f"{client.first_name} is deactivated. All records have been retained.")
         # Redirect the user to the client list page
-        return HttpResponseRedirect(reverse('service:clients'))
+        return redirect('service:clients')
     
     # Render the delete client page
     return render(request, "service/delete_client.html", {"client": client})
@@ -296,7 +294,7 @@ def add_client_horse(request, client_id):
             # Display a success message to the user
             messages.success(request, f'The Horse was successfully added to {client.first_name}!')
             # Redirect the user to the client page
-            return HttpResponseRedirect(reverse('service:client', args=[client_id]))
+            return redirect('service:client', args=[client_id])
         
     # Otherwise
     else:
@@ -327,7 +325,7 @@ def edit_horse(request, horse_id):
             # Display a success message to the user
             messages.success(request, f"{horse.name}'s information successfully updated!")
             # Redirect the user to the client list page
-            return HttpResponseRedirect(reverse('service:client', args=[client]))
+            return redirect('service:client', args=[client])
     
     # Otherwise
     else:
@@ -358,7 +356,7 @@ def delete_horse(request, horse_id):
         # Display a success message to the user
         messages.success(request, f"{horse.name} is deactivated. All records have been retained.")
         # Redirect the user to the client page
-        return HttpResponseRedirect(reverse('service:client', args=[client]))
+        return redirect('service:client', args=[client])
     
     # Render the delete horse page
     return render(request, "service/delete_horse.html", {"horse": horse, "client": client})
@@ -381,7 +379,7 @@ def create_job(request):
             # Display a success message to the user
             messages.success(request, f"Job successfully created!")
             # Redirect the user to the job page
-            return HttpResponseRedirect(reverse('service:job', args=[job]))
+            return redirect('service:job', args=[job])
 
     # Otherwise 
     else:
@@ -421,7 +419,7 @@ def edit_job(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Job successfully updated!")
             # Redirect the user to the job page
-            return HttpResponseRedirect(reverse('service:job', args=[job_id]))
+            return redirect('service:job', args=[job_id])
 
     # Otherwise 
     else:
@@ -453,7 +451,7 @@ def delete_job(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Job is deactivated. All records have been retained.")
             # Redirect the user to the client page
-            return HttpResponseRedirect(reverse('service:client', args=[client]))
+            return redirect('service:client', args=[client])
         
         # Otherwise, if there are no line items related to the job
         else:
@@ -462,7 +460,7 @@ def delete_job(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Job has been permanently deleted")
             # Redirect the user to the client page
-            return HttpResponseRedirect(reverse('service:client', args=[client]))
+            return redirect('service:client', args=[client])
     
     # Render the delete job page
     return render(request, "service/delete_job.html", {
@@ -496,7 +494,7 @@ def add_item(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Item successfully added!")
             # Redirect the user to the job page
-            return HttpResponseRedirect(reverse('service:job', args=[job_id]))
+            return redirect('service:job', args=[job_id])
         
     # Otherwise
     else:
@@ -516,7 +514,7 @@ def edit_item(request, item_id):
     # Get line item by id
     item = get_object_or_404(LineItem, pk=item_id)
     # Get the job id from the line item's job field
-    job = item.job.id
+    job = item.job
     # Get the client from the job's client field
     client = job.client
 
@@ -533,7 +531,7 @@ def edit_item(request, item_id):
             # Display a success message to the user
             messages.success(request, f"Item information successfully updated!")
             # Redirect the user to the job page
-            return HttpResponseRedirect(reverse('service:job', args=[job]))
+            return redirect('service:job', args=[job.id])
     
     # Otherwise
     else:
@@ -563,7 +561,7 @@ def delete_item(request, item_id):
         # Display a success message to the user
         messages.success(request, f"Item has been permanently deleted")
         # Redirect the user to the job page
-        return HttpResponseRedirect(reverse('service:job', args=[job]))
+        return redirect('service:job', args=[job])
     
     # Render the delete item page
     return render(request, "service/delete_item.html", {"item": item, "job": job})
