@@ -189,17 +189,14 @@ class LineItem(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
     def save(self, *args, **kwargs):
-        if self.price is None and self.service:
-            self.price = self.service.price
-        super().save(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
-        if self.price is None and self.service:
-            self.price = self.service.price
         if self.horse and self.job and self.horse.owner != self.job.client:
             raise ValueError(
-                'Horse does not belong to the client on this job.'
+                'Horse does not belong to the client.'
             )
+        
+        if self.price is None and self.service:
+            self.price = self.service.price
         super().save(*args, **kwargs)
 
     def __str__(self):
