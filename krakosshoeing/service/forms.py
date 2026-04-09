@@ -7,29 +7,39 @@ from .models import User, Client, Job, LineItem, Horse
 
 # User Auth Forms
 class RegistrationForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.label = ""
+
     username = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'username',
         'name': 'username',
         'class': 'username',
-        'placeholder': 'username'
+        'placeholder': 'Username',
+        'autocomplete': 'off'
     }))
     email = forms.EmailField(widget=forms.EmailInput(attrs={
         'id': 'email',
         'name': 'email',
         'class': 'email',
-        'placeholder': 'Email@example.com'
+        'placeholder': 'Email@example.com',
+        'autocomplete': 'on'
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'id': 'password',
         'name': 'password',
         'class': 'password',
-        'placeholder': 'password'
+        'placeholder': 'Password',
+        'autocomplete': 'off'
     }))
     confirmation = forms.CharField(widget=forms.PasswordInput(attrs={
         'id': 'confirmation',
         'name': 'confirmation',
         'class': 'confirmation',
-        'placeholder': 'Confirm password'
+        'placeholder': 'Confirm password',
+        'autocomplete': 'off'
     }))
 
     def clean_username(self):
@@ -71,17 +81,24 @@ class RegistrationForm(forms.Form):
 
 
 class LoginForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.label = ""
+
     username = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'username',
         'name': 'username',
         'class': 'username',
-        'placeholder': 'username'
+        'placeholder': 'Username',
+        'autocomplete': 'on'
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'id': 'password',
         'name': 'password',
         'class': 'password',
-        'placeholder': 'password'
+        'placeholder': 'Password'
     }))
 
 

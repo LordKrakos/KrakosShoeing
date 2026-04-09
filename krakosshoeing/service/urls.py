@@ -2,12 +2,14 @@ from django.urls import path
 
 from . import views
 
+app_name = 'service'
+
 urlpatterns = [
     # User URLs
-    path("dashboard/", views.dashboard, name="dashboard"),
+    path("", views.dashboard, name="dashboard"),
     path("register/", views.register, name="register"),
-    path("login/", views.login_view, name="login_view"),
-    path("logout/", views.logout_view, name="logout_view"),
+    path("accounts/login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
 
     # Client URLs
     path("clients/", views.client_list, name="clients"),

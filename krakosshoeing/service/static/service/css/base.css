@@ -1,0 +1,52 @@
+.navbar {
+  color: #fff;
+  background-color: black;
+}
+.navbar .logo-container {
+  width: 50px;
+  height: 50px;
+}
+.navbar .logo-container .logo {
+  width: 100%;
+  border-radius: 3px;
+}
+.navbar .navbar-toggler {
+  position: relative;
+  border: none;
+  outline: none;
+}
+.navbar .navbar-toggler:focus {
+  box-shadow: 0 0 0.2rem 0 #0D5EAF;
+}
+.navbar .offcanvas-header {
+  background-color: #000;
+}
+.navbar .offcanvas-header h5 {
+  color: #fff;
+}
+.navbar .offcanvas-body .navbar-nav li a {
+  color: #000;
+}
+.navbar .auth-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navbar .auth-nav .nav-link:hover {
+  color: #0D5EAF;
+}
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgba(0, 0, 0, 0.8941176471);
+}
+
+/*# sourceMappingURL=base.css.map */

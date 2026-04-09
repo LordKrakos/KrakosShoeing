@@ -1,0 +1,14 @@
+{% extends "service/layout.html" %}
+
+{% block main %}
+
+<form action="{% url 'service:login' %}" method="post">
+
+    {% csrf_token %}
+    {{ form }}
+
+    <input type="submit"/>
+
+</form>
+
+{% endblock %}
