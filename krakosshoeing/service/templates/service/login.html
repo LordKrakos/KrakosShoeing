@@ -1,14 +1,40 @@
 {% extends "service/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'service/css/login.css' %}">
+{% endblock %}
 
 {% block main %}
 
-<form action="{% url 'service:login' %}" method="post">
+    <div class="form-container">
 
-    {% csrf_token %}
-    {{ form }}
+        <h1>Login</h1>
 
-    <input type="submit"/>
+        <form action="{% url 'service:login' %}" method="post">
 
-</form>
+            {% csrf_token %}
+            {{ form }}
+
+            <button
+                class="login-btn" 
+                type="submit"
+                name="login"
+                aria-label="login"
+            >
+                Login
+            </button>
+
+        </form>
+
+        <p>
+            Don't have an account? <a href="{% url 'service:register' %}">Register here.</a>
+        </p>    
+
+    </div>
 
 {% endblock %}

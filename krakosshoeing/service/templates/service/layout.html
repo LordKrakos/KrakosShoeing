@@ -47,7 +47,7 @@
                     <a href="{% url 'service:dashboard' %}">
                         <img
                             class="logo"
-                            src="{% static 'service/images/Logo6.png' %}"
+                            src="{% static 'service/images/Logo.png' %}"
                             alt="Krakos Shoeing Logo"
                         />
                     </a>
@@ -149,6 +149,13 @@
         </nav>
 
         <main>
+
+            {% for message in messages %}
+                <div class="alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
             {% block main %}
             {% endblock %}
         </main>
