@@ -125,8 +125,7 @@ class Job(models.Model):
 
     Model Fields:
         - client: A foreign key linking to the Client model, representing the job's client.
-        - date: The date the job was created.
-        - next_appointment: The date of the next scheduled appointment.
+        - appointment: The date and time of the next scheduled appointment.
         - is_paid: A boolean indicating whether the job has been paid for.
         - comments: A text field for additional details about the job.
 
@@ -140,8 +139,7 @@ class Job(models.Model):
         null=True,
         related_name="jobs"
     )
-    date = models.DateField()
-    next_appointment = models.DateField(blank=True, null=True)
+    appointment = models.DateTimeField(blank=True, null=True)
     is_paid = models.BooleanField(default=False)
     comments = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -152,7 +150,7 @@ class Job(models.Model):
         return self.line_items.aggregate(total=models.Sum('price', default=0))['total']
 
     def __str__(self):
-        return f"{self.client} - {self.date}"
+        return f"{self.client} - {self.appointment}"
 
 
 class LineItem(models.Model):

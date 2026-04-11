@@ -157,26 +157,18 @@ class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = [
-            'date',
             'client',
             'is_paid',
-            'next_appointment',
+            'appointment',
             'comments'
         ]
         labels = {
-            'date': 'Date',
             'client': 'Client',
             'is_paid': 'Paid?',
-            'next_appointment': 'Next Appt',
-            'comments': 'Comments'
+            'appointment': 'Next Appt',
+            'comments': ''
         }
         widgets = {
-            'date': forms.DateInput(attrs={
-                'id': 'job-date',
-                'name': 'job-date',
-                'class': 'job-date',
-                'type': 'date'
-            }),
             'client' : forms.Select(attrs={
                 'id': 'client',
                 'name': 'client',
@@ -187,12 +179,12 @@ class JobForm(forms.ModelForm):
                 'name': 'is-paid',
                 'class': 'is-paid'
             }),
-            'next_appointment': forms.DateInput(attrs={
+            'appointment': forms.DateTimeInput(attrs={
                 'id': 'next-appt',
                 'name': 'next-appt',
                 'class': 'next-appt',
-                'type': 'date'
-            }),
+                'type': 'datetime-local'
+            }, format='%Y-%m-%dT%H:%M'),
             'comments': forms.Textarea(attrs={
                 'id': 'job-comments',
                 'name': 'job-comments',

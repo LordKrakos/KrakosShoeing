@@ -1,0 +1,35 @@
+{% extends "service/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'service/css/dashboard.css'%}">
+{% endblock %}
+
+{% block main %}
+
+    <section class="dashboard">
+        <h1>Dashboard</h1>
+
+        <section class="next-appointment">
+
+            <div class="date-time">
+                {{ next_appointment }}
+            </div>
+
+            <div class="client">
+                {{ next_appointment.client }}
+            </div>
+
+            <div class="horse-count">
+
+            </div>
+
+        </section>
+
+    </div>
+
+{% endblock %}

@@ -89,86 +89,66 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    
-    # Get the next appointment
-    # JOIN the Job and Client model 
+
+    # JOIN the Job and Client model and filter:
     next_appointment = Job.objects.select_related('client').filter(
-        # Filter by Jobs that have an upcoming appointment
         # WHERE Jobs are NOT NULL
-        next_appointment__isnull=False,
+        appointment__isnull=False,
         # WHERE upcoming appointments are >= to today's date
-        next_appointment__gte=timezone.now().date(),
+        appointment__gte=timezone.now(),
         # WHERE is_active is true
         is_active=True
-    # ORDER BY upcoming appointment date and get the first result
-    ).order_by('next_appointment').first()
+    # ORDER BY upcoming appointments date and get the first result
+    ).order_by('appointment').first()
 
-    # If there is an upcoming appointment
+    appointment_horses = None
+    last_visit = None
+    last_visit_items = None
+    num_horses = 0
+
     if next_appointment:
-        # Get all horses related to the owner(client) of the upcoming appointment
-        # JOIN the Horse and Client model
+        # JOIN the Horse and Client model and filter:
         appointment_horses = Horse.objects.select_related('owner').filter(
-            # Filter by horses that are owned by the client of the upcoming appointment
             # WHERE owner = client of the upcoming appointment
             owner=next_appointment.client,
             # WHERE is_active is true
             is_active=True
         )
+        num_horses = appointment_horses.count()
 
-        # Get the last visit for the client of the upcoming appointment
-        # JOIN the Job and Client model
+        # JOIN the Job and Client model and filter:
         last_visit = Job.objects.select_related('client').filter(
-            # Filter by jobs that are related to the client of the upcoming appointment
             # WHERE client = client of the upcoming appointment
             client=next_appointment.client,
+            # WHERE upcoming appointments are < the upcoming appointment date
+            appointment__lt=next_appointment.appointment,
             # WHERE is_active is true
             is_active=True
         # ORDER BY date and get the first result
-        ).order_by('-date').first()
+        ).order_by('-appointment').first()
 
-    # Otherwise, if there is no upcoming appointment
-    else:
-        # Set appointment_horses to None
-        appointment_horses = None
-        # Set last_visit to None
-        last_visit = None
+        if last_visit:
+            # JOIN the LineItem, Horse, and Service models and Filter: line items for the last visit
+            last_visit_items = LineItem.objects.select_related('horse', 'service').filter(job=last_visit)
 
-    # If there is a last visit
-    if last_visit:
-        # Get all line items related to the last visit
-        # JOIN the LineItem, Horse, and Service models
-        last_visit_items = LineItem.objects.select_related(
-            'horse', 'service'
-        # Filter by line items that are related to the last visit
-        ).filter(job=last_visit)
-
-    # Otherwise, if there is no last visit
-    else:
-        # Set last_visit_items to None
-        last_visit_items = None
-
-    # Get the 5 most recent jobs
-    # JOIN the Job and Client model
+    # JOIN the Job and Client model and filter:
     recent_jobs = Job.objects.select_related('client').filter(
-        # Filter by jobs that are active
+        # WHERE upcoming appointments are < today's date
+        appointment__lt=timezone.now(),
         # WHERE is_active is true
         is_active=True
-    # ORDER BY date and get the first 5 results
-    ).order_by('-date')[:5]
-
-    # Get the total number of active clients
-    # Filter the Client model by active clients and get the count
-    total_clients = Client.objects.filter(is_active=True).count()
+    # ORDER BY created_at date and get the first 5 results
+    ).order_by('-appointment')[:5]
 
     # Render the dashboard page
-    # with the next appointment, appointment horses, last visit, last visit items, recent jobs, and total clients
+    # with the next appointment, appointment horses, number of horses, last visit, last visit items, and recent jobs
     return render(request, "service/dashboard.html", {
         "next_appointment": next_appointment,
         "appointment_horses": appointment_horses,
+        "num_horses": num_horses,
         "last_visit": last_visit,
         "last_visit_items": last_visit_items,
         "recent_jobs": recent_jobs,
-        "total_clients": total_clients,
     })
 
 
@@ -294,7 +274,7 @@ def add_client_horse(request, client_id):
             # Display a success message to the user
             messages.success(request, f'The Horse was successfully added to {client.first_name}!')
             # Redirect the user to the client page
-            return redirect('service:client', args=[client_id])
+            return redirect('service:client', client_id=client_id)
         
     # Otherwise
     else:
@@ -325,7 +305,7 @@ def edit_horse(request, horse_id):
             # Display a success message to the user
             messages.success(request, f"{horse.name}'s information successfully updated!")
             # Redirect the user to the client list page
-            return redirect('service:client', args=[client])
+            return redirect('service:client', client_id=client)
     
     # Otherwise
     else:
@@ -356,7 +336,7 @@ def delete_horse(request, horse_id):
         # Display a success message to the user
         messages.success(request, f"{horse.name} is deactivated. All records have been retained.")
         # Redirect the user to the client page
-        return redirect('service:client', args=[client])
+        return redirect('service:client', client_id=client)
     
     # Render the delete horse page
     return render(request, "service/delete_horse.html", {"horse": horse, "client": client})
@@ -379,7 +359,7 @@ def create_job(request):
             # Display a success message to the user
             messages.success(request, f"Job successfully created!")
             # Redirect the user to the job page
-            return redirect('service:job', args=[job])
+            return redirect('service:job', job_id=job)
 
     # Otherwise 
     else:
@@ -419,7 +399,7 @@ def edit_job(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Job successfully updated!")
             # Redirect the user to the job page
-            return redirect('service:job', args=[job_id])
+            return redirect('service:job', job_id=job_id)
 
     # Otherwise 
     else:
@@ -451,7 +431,7 @@ def delete_job(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Job is deactivated. All records have been retained.")
             # Redirect the user to the client page
-            return redirect('service:client', args=[client])
+            return redirect('service:client', client_id=client)
         
         # Otherwise, if there are no line items related to the job
         else:
@@ -460,7 +440,7 @@ def delete_job(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Job has been permanently deleted")
             # Redirect the user to the client page
-            return redirect('service:client', args=[client])
+            return redirect('service:client', client_id=client)
     
     # Render the delete job page
     return render(request, "service/delete_job.html", {
@@ -494,7 +474,7 @@ def add_item(request, job_id):
             # Display a success message to the user
             messages.success(request, f"Item successfully added!")
             # Redirect the user to the job page
-            return redirect('service:job', args=[job_id])
+            return redirect('service:job', job_id=job_id)
         
     # Otherwise
     else:
@@ -531,7 +511,7 @@ def edit_item(request, item_id):
             # Display a success message to the user
             messages.success(request, f"Item information successfully updated!")
             # Redirect the user to the job page
-            return redirect('service:job', args=[job.id])
+            return redirect('service:job', job_id=job.id)
     
     # Otherwise
     else:
@@ -561,7 +541,7 @@ def delete_item(request, item_id):
         # Display a success message to the user
         messages.success(request, f"Item has been permanently deleted")
         # Redirect the user to the job page
-        return redirect('service:job', args=[job])
+        return redirect('service:job', job_id=job)
     
     # Render the delete item page
     return render(request, "service/delete_item.html", {"item": item, "job": job})
