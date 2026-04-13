@@ -1,0 +1,36 @@
+{% extends "service/layout.html" %}
+{% load static %}
+
+{% block title %}
+    New Client
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'service/css/create_client.css' %}">
+{% endblock %}
+
+{% block main %}
+
+    <div class="form-container">
+
+        <h1>New Client</h1>
+
+        <form action="{% url 'service:new_client' %}" method="post">
+
+            {% csrf_token %}
+            {{ form }}
+
+            <button
+                class="add-client-btn" 
+                type="submit"
+                name="add-client"
+                aria-label="Add client"
+            >
+                Add Client
+            </button>
+
+        </form>    
+
+    </div>
+
+{% endblock %}

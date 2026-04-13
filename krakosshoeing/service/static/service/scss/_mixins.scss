@@ -1,0 +1,33 @@
+@mixin form-base {
+    input {
+        width: 100%;
+        padding: .375rem .75rem;
+        border-radius: var(--bs-border-radius);
+
+        &:invalid {
+            border: 1.5px solid var(--bs-danger);
+        }
+
+        &:valid {
+            border: 1.5px solid var(--bs-success);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    button {
+        color: #fff;
+        width: 100%;
+        max-width: 200px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        background-color: var(--primary-color);
+
+        &:hover {
+            background-color: var(--primary-hover);
+        }
+    }
+}

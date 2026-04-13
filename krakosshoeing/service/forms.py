@@ -110,7 +110,7 @@ class ClientForm(forms.ModelForm):
         labels = {
             'first_name': 'First Name',
             'last_name': 'Last Name',
-            'photo': 'Client Image',
+            'photo': 'Photo',
             'business_name': 'Business',
             'phone_number': 'Phone Number',
             'email': 'Email'

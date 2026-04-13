@@ -17,15 +17,39 @@
         <section class="next-appointment">
 
             <div class="date-time">
-                {{ next_appointment }}
+                <div>
+                    {{ next_appointment|date:"D, M j, Y " }}
+                </div>
+
+                <div>
+                    {{ next_appointment|time:"g:i A" }}
+                </div>
+                
             </div>
 
             <div class="client">
-                {{ next_appointment.client }}
+                {% if next_appointment.client.business_name %}
+                    <div>
+                        <span>
+                            {{ next_appointment.client.first_name }}
+                            {{ next_appointment.client.last_name }}
+                        </span>
+                        <span>
+                            {{ next_appointment.client.business_name }}
+                        </span>
+                    </div>
+                {% else %}
+                    <div>
+                        <span>
+                            {{ next_appointment.client.first_name }}
+                            {{ next_appointment.client.last_name }}
+                        </span>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="horse-count">
-
+                {{ num_horses }}
             </div>
 
         </section>

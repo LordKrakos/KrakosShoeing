@@ -1,9 +1,16 @@
+:root {
+  --primary-color: #014488;
+  --primary-hover: #01509f;
+  --primary-shadow: #014488c5;
+}
+
 body {
   box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 body .navbar {
   position: sticky;
-  border-bottom: 1px solid #014488;
+  border-bottom: 1px solid var(--primary-color);
 }
 body .navbar .logo-container {
   width: 50px;
@@ -18,13 +25,30 @@ body .navbar .navbar-toggler {
   outline: none;
 }
 body .navbar .navbar-toggler:focus {
-  box-shadow: 0 0 0.2rem 0 rgba(1, 68, 136, 0.7725490196);
+  box-shadow: 0 0 0.2rem 0 var(--primary-shadow);
 }
-body .navbar .offcanvas-header {
-  background-color: #000;
+body .navbar .offcanvas-header .company-name {
+  background: linear-gradient(75deg, #1f3c8f 0%, #014488 35%, #8ab8e6 49%, #cfe6ff 50%, #8ab8e6 51%, #014488 65%, #1f3c8f 100%);
+  background-size: 300%; /* needed for sweep */
+  background-position: 0% center;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: "Eagle Lake", serif;
+  font-weight: 900;
 }
-body .navbar .offcanvas-body .navbar-nav li a {
-  color: #000;
+body .navbar .offcanvas-header::after {
+  display: block;
+  content: "";
+  width: 100%;
+  height: 1px;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+}
+body .navbar .offcanvas-body .navbar-nav a:hover {
+  color: var(--primary-hover);
 }
 body .navbar .auth-nav {
   display: flex;
@@ -36,7 +60,7 @@ body .navbar .auth-nav {
   list-style: none;
 }
 body .navbar .auth-nav .nav-link:hover {
-  color: #014488;
+  color: var(--primary-hover);
 }
 body main {
   display: flex;
