@@ -367,7 +367,7 @@ def create_job(request):
         form = JobForm()
 
     # Render the create job page with the form
-    return render(request, "service/create_job.html", {"form": form})
+    return render(request, "service/new_job.html", {"form": form})
 
 
 @login_required
