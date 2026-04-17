@@ -32,7 +32,7 @@ class RegistrationForm(forms.Form):
         'name': 'password',
         'class': 'password',
         'placeholder': 'Password',
-        'autocomplete': 'off'
+        'autocomplete': 'new-password'
     }))
     confirmation = forms.CharField(widget=forms.PasswordInput(attrs={
         'id': 'confirmation',
@@ -98,7 +98,8 @@ class LoginForm(forms.Form):
         'id': 'password',
         'name': 'password',
         'class': 'password',
-        'placeholder': 'Password'
+        'placeholder': 'Password',
+        'autocomplete': 'current-password'
     }))
 
 
@@ -106,7 +107,14 @@ class LoginForm(forms.Form):
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = '__all__'
+        fields = [
+            'first_name',
+            'last_name',
+            'photo',
+            'business_name',
+            'phone_number',
+            'email'
+        ]
         labels = {
             'first_name': 'First Name',
             'last_name': 'Last Name',
@@ -118,37 +126,37 @@ class ClientForm(forms.ModelForm):
         widgets = {
             'first_name': forms.TextInput(attrs={
                 'id': 'first-name',
-                'name': 'first-name',
-                'class': 'first-name'
+                'class': 'first-name',
+                'placeholder': 'First Name',
+                'autocomplete': 'new-password'
             }),
             'last_name': forms.TextInput(attrs={
                 'id': 'last-name',
-                'name': 'last-name',
-                'class': 'last-name'
+                'class': 'last-name',
+                'placeholder': 'Last Name',
+                'autocomplete': 'new-password'
             }),
             'photo': forms.ClearableFileInput(attrs={
                 'id': 'client-image',
-                'name': 'client-image',
                 'class': 'client-image'
             }),
             'business_name': forms.TextInput(attrs={
                 'id': 'business',
-                'name': 'business',
                 'class': 'business',
                 'placeholder': 'Business name'
             }),
             'phone_number': forms.TextInput(attrs={
                 'id': 'phone-number',
-                'name': 'phone-number',
                 'class': 'phone-number',
                 'type': 'tel',
-                'placeholder': '(xxx) xxx-xxxx'
+                'placeholder': '(xxx) xxx-xxxx',
+                'autocomplete': 'new-password'
             }),
             'email': forms.EmailInput(attrs={
                 'id': 'email',
-                'name': 'email',
                 'class': 'email',
-                'placeholder': 'Example@email.com'
+                'placeholder': 'Example@email.com',
+                'autocomplete': 'new-password'
             })
         }
 
@@ -171,23 +179,19 @@ class JobForm(forms.ModelForm):
         widgets = {
             'client' : forms.Select(attrs={
                 'id': 'client',
-                'name': 'client',
                 'class': 'client',
             }),
             'is_paid': forms.CheckboxInput(attrs={
                 'id': 'is-paid',
-                'name': 'is-paid',
                 'class': 'is-paid'
             }),
             'appointment': forms.DateTimeInput(attrs={
                 'id': 'next-appt',
-                'name': 'next-appt',
                 'class': 'next-appt',
                 'type': 'datetime-local'
             }, format='%Y-%m-%dT%H:%M'),
             'comments': forms.Textarea(attrs={
                 'id': 'job-comments',
-                'name': 'job-comments',
                 'placeholder': 'Job comments go here...',
             })
         }
@@ -211,23 +215,19 @@ class HorseForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'id': 'horse-name',
-                'name': 'horse-name',
                 'class': 'horse-name'
             }),
             'breed': forms.TextInput(attrs={
                 'id': 'breed',
-                'name': 'breed',
                 'class': 'breed',
                 'placeholder': 'Thoroughbred'
             }),
             'photo': forms.ClearableFileInput(attrs={
                 'id': 'horse-image',
-                'name': 'horse-image',
                 'class': 'horse-image'
             }),
             'description': forms.Textarea(attrs={
                 'id': 'horse-description',
-                'name': 'horse-description',
                 'placeholder': 'Give a description of the horse...',
             })
         }
@@ -256,17 +256,14 @@ class LineItemForm(forms.ModelForm):
         widgets = {
             'horse' : forms.Select(attrs={
                 'id': 'horse',
-                'name': 'horse',
                 'class': 'horse'
             }),
             'service' : forms.Select(attrs={
                 'id': 'service',
-                'name': 'service',
                 'class': 'service'
             }),
             'price' : forms.NumberInput(attrs={
                 'id': 'price',
-                'name': 'price',
                 'class': 'price'
             }),
         }

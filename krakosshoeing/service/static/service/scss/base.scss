@@ -11,6 +11,7 @@ body {
     .navbar {
         position: sticky;
         border-bottom: 1px solid var(--primary-color);
+        background-color: #fff;
 
         .logo-container {
             width: 50px;
@@ -99,7 +100,7 @@ body {
         justify-content: center;
         flex-direction: column;
         width: 100%;
-        height: calc(100dvh - 67px);
+        min-height: calc(100dvh - 67px);
         padding: 10px;
 
         .alert-error {
@@ -111,4 +112,11 @@ body {
         }
     }
 
+}
+
+@media (orientation: landscape) {
+    body main {
+        height: 100%;
+        margin: 0 auto;
+    }
 }

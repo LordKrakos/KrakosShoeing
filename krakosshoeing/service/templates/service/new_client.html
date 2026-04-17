@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'service/css/create_client.css' %}">
+    <link rel="stylesheet" href="{% static 'service/css/client_form.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -18,10 +18,23 @@
         <form action="{% url 'service:new_client' %}" method="post">
 
             {% csrf_token %}
-            {{ form }}
+            <div class="name-wrapper">
+                {{ form.first_name }}
+                {{ form.last_name }}
+            </div>
+
+            <div class="photo-business-wrapper">
+                {{ form.photo }}
+                {{ form.business_name }}
+            </div>
+
+            <div class="number-email-wrapper">
+                {{ form.phone_number }}
+                {{ form.email }}
+            </div>
 
             <button
-                class="add-client-btn" 
+                class="add-client-btn form-btn" 
                 type="submit"
                 name="add-client"
                 aria-label="Add client"

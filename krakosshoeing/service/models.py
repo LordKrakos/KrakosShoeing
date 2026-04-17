@@ -31,7 +31,7 @@ class Client(models.Model):
     last_name = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='client_photos/', blank=True, null=True)
     business_name = models.CharField(blank=True, null=True, max_length=100)
-    phone_number = PhoneNumberField(blank=True, null=True, unique=True)
+    phone_number = PhoneNumberField(unique=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

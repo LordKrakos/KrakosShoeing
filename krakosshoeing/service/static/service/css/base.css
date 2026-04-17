@@ -11,6 +11,7 @@ body {
 body .navbar {
   position: sticky;
   border-bottom: 1px solid var(--primary-color);
+  background-color: #fff;
 }
 body .navbar .logo-container {
   width: 50px;
@@ -68,7 +69,7 @@ body main {
   justify-content: center;
   flex-direction: column;
   width: 100%;
-  height: calc(100dvh - 67px);
+  min-height: calc(100dvh - 67px);
   padding: 10px;
 }
 body main .alert-error {
@@ -76,6 +77,13 @@ body main .alert-error {
 }
 body main .alert-success {
   color: var(--bs-success);
+}
+
+@media (orientation: landscape) {
+  body main {
+    height: 100%;
+    margin: 0 auto;
+  }
 }
 
 /*# sourceMappingURL=base.css.map */

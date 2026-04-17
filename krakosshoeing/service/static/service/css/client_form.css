@@ -46,28 +46,23 @@
   text-align: center;
 }
 
-.form-container {
-  width: 100%;
-  max-width: 500px;
+.name-wrapper,
+.photo-business-wrapper,
+.number-email-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 }
-.form-container h1 {
-  align-self: flex-start;
-}
-.form-container form {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-.form-container form div {
-  margin-bottom: 7px;
-  width: 100%;
-}
-.form-container form button {
-  display: block;
-  margin: 0 auto;
-}
-.form-container p {
-  margin: 0;
-  text-align: center;
+.name-wrapper .first-name,
+.name-wrapper .last-name,
+.name-wrapper .client-image,
+.photo-business-wrapper .first-name,
+.photo-business-wrapper .last-name,
+.photo-business-wrapper .client-image,
+.number-email-wrapper .first-name,
+.number-email-wrapper .last-name,
+.number-email-wrapper .client-image {
+  flex: 1 1 145px;
 }
 
-/*# sourceMappingURL=auth_form.css.map */
+/*# sourceMappingURL=client_form.css.map */

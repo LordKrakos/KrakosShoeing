@@ -1,33 +1,60 @@
 @mixin form-base {
-    input {
+    .form-container {
         width: 100%;
-        padding: .375rem .75rem;
-        border-radius: var(--bs-border-radius);
+        max-width: 500px;
 
-        &:invalid {
-            border: 1.5px solid var(--bs-danger);
+        h1 {
+            align-self: flex-start;
         }
 
-        &:valid {
-            border: 1.5px solid var(--bs-success);
+        form {
+            width: 100%;
+            margin-bottom: 1rem;
+
+            div {
+                margin-bottom: 7px;
+                width: 100%;
+
+                input {
+                    width: 100%;
+                    padding: .375rem .75rem;
+                    border-radius: var(--bs-border-radius);
+
+                    &:invalid {
+                        border: 1.5px solid var(--bs-danger);
+                    }
+
+                    &:valid {
+                        border: 1.5px solid var(--bs-success);
+                    }
+
+                    &:focus {
+                        outline: none;
+                    }
+                }
+            }
+
+            .form-btn {
+                color: #fff;
+                width: 100%;
+                max-width: 200px;
+                display: block;
+                margin: 0 auto;
+                padding: 5px 10px;
+                border: none;
+                border-radius: 3px;
+                background-color: var(--primary-color);
+
+                &:hover {
+                    background-color: var(--primary-hover);
+                }
+            }
         }
 
-        &:focus {
-            outline: none;
+        p {
+            margin: 0;
+            text-align: center;
         }
-    }
 
-    button {
-        color: #fff;
-        width: 100%;
-        max-width: 200px;
-        padding: 5px 10px;
-        border: none;
-        border-radius: 3px;
-        background-color: var(--primary-color);
-
-        &:hover {
-            background-color: var(--primary-hover);
-        }
     }
 }

@@ -175,7 +175,7 @@ def create_client(request):
         form = ClientForm()
 
     # Render the create_client.html template with the form
-    return render(request, "service/create_client.html", {"form": form})
+    return render(request, "service/new_client.html", {"form": form})
 
 
 @login_required

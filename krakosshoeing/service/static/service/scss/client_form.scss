@@ -1,0 +1,16 @@
+@use 'mixins' as *;
+@include form-base;
+
+.name-wrapper,
+.photo-business-wrapper,
+.number-email-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    .first-name,
+    .last-name,
+    .client-image {
+        flex: 1 1 145px;
+    }
+}
