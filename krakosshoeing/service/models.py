@@ -139,7 +139,7 @@ class Job(models.Model):
         null=True,
         related_name="jobs"
     )
-    appointment = models.DateTimeField(blank=True, null=True)
+    appointment = models.DateTimeField()
     is_paid = models.BooleanField(default=False)
     comments = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
