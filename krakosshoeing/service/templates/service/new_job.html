@@ -17,13 +17,24 @@
         <form action="{% url 'service:new_job' %}" method="post">
 
             {% csrf_token %}
-            {{ form }}
+            <div class="wrapper">
+                <div>
+                    {{ form.client.label_tag }}
+                    {{ form.client }}
+                </div>
+
+                <div>
+                    {{ form.appointment.label_tag }}
+                    {{ form.appointment }}
+                </div>
+                {{ form.comments }}
+            </div>
 
             <button
                 class="login-btn form-btn" 
                 type="submit"
-                name="login"
-                aria-label="login"
+                name="add-job"
+                aria-label="Job creation button"
             >
                 Add Job
             </button>

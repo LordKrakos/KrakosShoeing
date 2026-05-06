@@ -1,0 +1,94 @@
+{% extends "service/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Clients
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'service/css/clients.css' %}">
+{% endblock %}
+
+{% block main %}
+
+    <header class="client-list-header">
+
+        <h1>Clients</h1>
+
+        <a href="{% url 'service:new_client' %}">
+            <i class="bi bi-person-add"></i>
+        </a>
+
+    </header>
+
+    <div class="client-cards">
+        {% for client in clients %}
+            <article class="card">
+
+                <div class="card-dropdown">
+
+                    <button class="drop-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li>
+                            <a class="dropdown-item" href="{% url 'service:edit_client' client.id %}">Edit</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'service:delete_client' client.id %}">Delete</a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <header>
+                    <a href="{% url 'service:client' client.id %}">
+
+                        {% if client.photo %}
+                            <img src="{{ client.photo.url }}" alt="{{ client.first_name }}"/>
+                        {% else %}
+                            <i class="bi bi-person-circle"></i>
+                        {% endif %}
+
+                    </a>
+
+                    <div class="name-business">
+
+                        <h2>
+                            {{ client.first_name }} {{ client.last_name }}
+                        </h2>
+
+                        {% if client.business_name %}
+                            <span>{{ client.business_name }}</span>
+                        {% endif %}
+
+                    </div>
+                </header>
+
+                <div class="content">
+                    <div class="status">
+                        
+                    </div>
+
+                    <div class="contact">
+                        <a href="tel:{{ client.phone_number }}">
+                            {{ client.phone_number }}
+                        </a>
+
+                        {% if client.email %}
+                            <a href="mailto:{{ client.email }}" target="_blank">
+                                {{ client.email }}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+            </article>
+        {% endfor %}
+    </div>
+    
+{% endblock %}

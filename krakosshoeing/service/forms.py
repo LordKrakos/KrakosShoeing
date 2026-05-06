@@ -166,18 +166,24 @@ class JobForm(forms.ModelForm):
         model = Job
         fields = [
             'client',
+            'is_paid',
             'appointment',
             'comments'
         ]
         labels = {
             'client': 'Client',
-            'appointment': 'Appt',
+            'is_paid': 'Paid?',
+            'appointment': 'Appt date & time',
             'comments': ''
         }
         widgets = {
             'client' : forms.Select(attrs={
                 'id': 'client',
                 'class': 'client',
+            }),
+            'is_paid': forms.CheckboxInput(attrs={
+                'id': 'is-paid',
+                'class': 'is-paid'
             }),
             'appointment': forms.DateTimeInput(attrs={
                 'id': 'next-appt',

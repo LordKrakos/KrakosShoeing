@@ -162,12 +162,19 @@ def create_client(request):
 
         # If the form is valid
         if form.is_valid():
+            print("Form is valid")
             # Save the form data to the database
             form.save()
             # Display a success message to the user
             messages.success(request, "Client successfully created!")
             # Redirect the user to the client list page
             return redirect('service:clients')
+        else:
+            print("Form errors:", form.errors)
+            # Display an error message to the user
+            messages.error(request, "Please correct the errors below.")
+            # Render the create client page with the form containing error messages
+            return render(request, "service/new_client.html", {"form": form})
         
     # Otherwise
     else:

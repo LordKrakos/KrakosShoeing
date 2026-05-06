@@ -15,7 +15,7 @@
 
         <h1>New Client</h1>
 
-        <form action="{% url 'service:new_client' %}" method="post">
+        <form action="{% url 'service:new_client' %}" method="post" enctype="multipart/form-data">
 
             {% csrf_token %}
             <div class="name-wrapper">
@@ -37,7 +37,7 @@
                 class="add-client-btn form-btn" 
                 type="submit"
                 name="add-client"
-                aria-label="Add client"
+                aria-label="Client creation button"
             >
                 Add Client
             </button>

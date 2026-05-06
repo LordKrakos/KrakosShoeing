@@ -1,0 +1,55 @@
+.client-list-header {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+.client-list-header h1 {
+  margin: 0;
+}
+.client-list-header a {
+  padding: 5px 25px;
+  border-radius: 4px;
+  text-decoration: none;
+  background-color: var(--primary-color);
+}
+.client-list-header a:hover {
+  background-color: var(--primary-hover);
+}
+.client-list-header a .bi-person-add {
+  color: #fff;
+  font-size: 1em;
+}
+
+.client-cards .card .card-dropdown {
+  display: flex;
+  justify-content: end;
+  padding: 7px;
+  border-radius: var(--bs-card-border-radius) var(--bs-card-border-radius) 0 0;
+  background-color: var(--primary-color);
+}
+.client-cards .card .card-dropdown .drop-btn {
+  color: #fff;
+  border: none;
+  background-color: transparent;
+}
+.client-cards .card header a {
+  display: block;
+  width: 75px;
+  position: relative;
+  top: -30px;
+  left: 20px;
+}
+.client-cards .card header a img {
+  width: 100%;
+  border: 2px solid #fff;
+  border-radius: 50px;
+}
+.client-cards .card header h2 {
+  margin: 0;
+}
+.client-cards .card header span {
+  color: gray;
+}
+
+/*# sourceMappingURL=clients.css.map */
